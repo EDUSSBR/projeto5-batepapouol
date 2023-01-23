@@ -1,4 +1,3 @@
-let userName = ''
 const services = {
     endpoints: { status: "status", messages: "messages", participants: "participants" },
     createMessageBody: function createMessageBody(userName, message, userToSend, messageType) {
@@ -52,8 +51,13 @@ const services = {
         return response;
     },
 }
-
-
+function openModal() {
+    document.querySelector('#modal-container').classList.remove('hide-modal');
+}
+function closeModal() {
+    document.querySelector('#modal-container').classList.add('hide-modal');
+    document.querySelector('input[type=text]').focus();
+}
 const controller = {
     mountChatPage: function mountChatPage() {
         document.body.innerHTML = `
@@ -79,10 +83,11 @@ const controller = {
             </aside>
         </div>
     </div>`
-    },    
+    },
     setupController: function setupController() {
         this.chatElement = document.querySelector('#chat-page-container main');
-    },mapMessage: function mapMessage(messages) {
+    },
+    mapMessage: function mapMessage(messages) {
         this.messages = messages.map(message => {
             if (message.type === 'status') {
                 return `<div class="status set-opacity">
@@ -116,7 +121,8 @@ const controller = {
                 </div>`;
             }
         })
-    },mapMessage1: function mapMessage1(messages) {
+    },
+    mapMessage1: function mapMessage1(messages) {
         let fragment = document.createDocumentFragment()
         let newFrag = messages.reduce((acc, message) => {
 
@@ -193,10 +199,10 @@ const controller = {
     setUserName: function setUserName(username) {
         this.info.username = username;
     },
-    setCheckedPersonItem: function setCheckedPersonItem(checkedPersonItem) {
+    setCheckedPersonItem: function setUserName(checkedPersonItem) {
         this.info.checkedPersonItem = checkedPersonItem;
     },
-    setCheckedMessageTypeItem: function setCheckedMessageTypeItem(checkedMessageTypeItem) {
+    setCheckedMessageTypeItem: function setUserName(checkedMessageTypeItem) {
         this.info.checkedMessageTypeItem = checkedMessageTypeItem;
     },
     info: {
@@ -204,7 +210,6 @@ const controller = {
         checkedPersonItem: '',
         checkedMessageTypeItem: 'Público'
     },
-      
     createParticipantsTemplate: function createParticipantsTemplate(participants) {
         let newFrag = document.createDocumentFragment();
         let h1 = document.createElement('h1');
@@ -262,7 +267,7 @@ const controller = {
     }
 
 }
-
+let userName = ''
 function createParticipantsFragments(text) {
     let frag = new DocumentFragment();
     for (let item of text) {
@@ -291,113 +296,112 @@ function joinChat(e) {
     document.querySelector('#spinner-container').classList.toggle('hide');
     e.target.classList.toggle("hide");
     services.joinParticipant(userName)
-    .then((response) => {
-        if (response.ok) {
-            controller.setUserName(userName);
-            return services.getMessages();
-        }
-    })
-    .then(messages => messages.json())
-    .then(actualMessages => {
-        document.querySelector('#join-chat-page-container').remove();
-        controller.mountChatPage();
-        controller.setupController();
-        let newMessages = controller.mapMessage1(actualMessages);
-        document.querySelector('main').appendChild(newMessages);
-        document.querySelector('main > div').classList.add('set-opacity');
+        .then((response) => {
+            if (response.ok) {
+                controller.setUserName(userName);
+                return services.getMessages();
+            }
+        })
+        .then(messages => messages.json())
+        .then(actualMessages => {
+            document.querySelector('#join-chat-page-container').remove();
+            controller.mountChatPage();
+            controller.setupController();
+            let newMessages = controller.mapMessage1(actualMessages);
+            document.querySelector('main').appendChild(newMessages);
+            document.querySelector('main > div').classList.add('set-opacity');
 
-        // primera busca de participantes
-        let el = document.querySelector('aside');
-        services.getParticipants()
-            .then(response => response.json())
-            .then(participants => {
-                el.appendChild(controller.createParticipantsTemplate(participants));
-                document.querySelector('aside > div > ion-icon:last-child').classList.add('checkedPerson');
-                let publicElement = el.querySelectorAll('div');
-                publicElement[publicElement.length - 2].lastChild.classList.add('checkedMessageType');
-            })
-
-
-
-        // primera busca de participantes
-        document.querySelector('input[type=text]').focus();
-        controller.scrollToLastElement();
-    })
-    .then(() => {
-        setInterval(() => services.updateStatus(controller.info.username), 5000);
-        setInterval(() => {
+            // primera busca de participantes
             let el = document.querySelector('aside');
-            let checkedPersonItem = document.querySelector('.checkedPerson')?.previousElementSibling?.innerText || "Todos";
-            let checkedMessageTypeItem = document.querySelector('.checkedMessageType')?.previousElementSibling?.innerText || "Público";
-            controller.setCheckedPersonItem(checkedPersonItem);
-            controller.setCheckedMessageTypeItem(checkedMessageTypeItem);
             services.getParticipants()
                 .then(response => response.json())
                 .then(participants => {
-                    el.innerHTML = '';
                     el.appendChild(controller.createParticipantsTemplate(participants));
-                    if (checkedPersonItem === 'Todos') {
-                        document.querySelector('aside > div > ion-icon:last-child').classList.add('checkedPerson');
-                    } else {
-                        controller.setCheckedPersonItem(checkedPersonItem.slice(0, 25));
-                    }
+                    document.querySelector('aside > div > ion-icon:last-child').classList.add('checkedPerson');
                     let publicElement = el.querySelectorAll('div');
-                    if (checkedMessageTypeItem === 'Reservadamente') {
-                        publicElement[publicElement.length - 1].lastChild.classList.add('checkedMessageType');
-                    } else {
-                        controller.setCheckedMessageTypeItem("Reservadamente")
-                        publicElement[publicElement.length - 2].lastChild.classList.add('checkedMessageType');
-                    }
+                    publicElement[publicElement.length - 2].lastChild.classList.add('checkedMessageType');
                 })
-        }, 10000);
-        setInterval(async () => {
-            let chatItensDOM = document.querySelectorAll('.chat-item');
-            await services.getMessages()
-                .then((messages) => messages.json())
-                .then(messages => {
-                    return { chatItensDOM, actualMessages: messages }
-                })
-                .then(({ chatItensDOM, actualMessages }) => {
-                    let DomItensArray = [...chatItensDOM];
-                    let lastItem = DomItensArray[chatItensDOM.length - 1];
-                    let lastMSG = lastItem.lastChild.textContent.trim();
-                    let indexToReplace = chatItensDOM.length - 1;
-                    for (let i = (chatItensDOM.length - 1); i > -1; i--) {
-                        if (actualMessages[i]?.text === lastMSG) {
-                            indexToReplace = i;
-                            break;
+
+
+
+            // primera busca de participantes
+            document.querySelector('input[type=text]').focus();
+            controller.scrollToLastElement();
+        })
+        .then(() => {
+            setInterval(() => services.updateStatus(controller.info.username), 5000);
+            setInterval(() => {
+                let el = document.querySelector('aside');
+                let checkedPersonItem = document.querySelector('.checkedPerson')?.previousElementSibling?.innerText || "Todos";
+                let checkedMessageTypeItem = document.querySelector('.checkedMessageType')?.previousElementSibling?.innerText || "Público";
+                controller.setCheckedPersonItem(checkedPersonItem);
+                controller.setCheckedMessageTypeItem(checkedMessageTypeItem);
+                services.getParticipants()
+                    .then(response => response.json())
+                    .then(participants => {
+                        el.innerHTML = '';
+                        el.appendChild(controller.createParticipantsTemplate(participants));
+                        if (checkedPersonItem === 'Todos') {
+                            document.querySelector('aside > div > ion-icon:last-child').classList.add('checkedPerson');
+                        } else {
+                            controller.setCheckedPersonItem(checkedPersonItem.slice(0, 25));
                         }
-                    }
-                    let newItens = [];
-                    if (indexToReplace !== chatItensDOM.length - 1) {
-                        newItens = actualMessages.slice(indexToReplace + 1);
+                        let publicElement = el.querySelectorAll('div');
+                        if (checkedMessageTypeItem === 'Reservadamente') {
+                            publicElement[publicElement.length - 1].lastChild.classList.add('checkedMessageType');
+                        } else {
+                            controller.setCheckedMessageTypeItem("Reservadamente")
+                            publicElement[publicElement.length - 2].lastChild.classList.add('checkedMessageType');
+                        }
+                    })
+            }, 10000);
+            setInterval(async () => {
+                let chatItensDOM = document.querySelectorAll('.chat-item');
+                await services.getMessages()
+                    .then((messages) => messages.json())
+                    .then(messages => {
+                        return { chatItensDOM, actualMessages: messages }
+                    })
+                    .then(({ chatItensDOM, actualMessages }) => {
+                        let DomItensArray = [...chatItensDOM];
+                        let lastItem = DomItensArray[chatItensDOM.length - 1];
+                        let lastMSG = lastItem.lastChild.textContent.trim();
+                        let indexToReplace = chatItensDOM.length - 1;
+                        for (let i = (chatItensDOM.length - 1); i > -1; i--) {
+                            if (actualMessages[i]?.text === lastMSG) {
+                                indexToReplace = i;
+                                break;
+                            }
+                        }
+                        let newItens = [];
+                        if (indexToReplace !== chatItensDOM.length - 1) {
+                            newItens = actualMessages.slice(indexToReplace + 1);
 
-                    }
-                    if (newItens.length > 0) {
-                        let newMessages = controller.mapMessage1(newItens);
-                        document.querySelector('main').appendChild(newMessages);
-                        document.querySelector('main > div').classList.add('set-opacity');
-                    }
-                    indexToReplace = chatItensDOM - 1;
-                    newItens = [];
-                    indexToReplace = 0;
-                    controller.scrollToLastElement();
-                    document.querySelector('input[type=text]').focus();
-                })
-        }, 3000);
-    })
-    .catch(err => {
-        document.querySelector('#spinner-container').classList.toggle('hide');
-        e.target.classList.toggle("hide");
-        if (e.target.children.length < 3) {
-            let el = document.createElement('p');
-            el.innerHTML = 'Someone already took this name or is invalid, please choose another!';
-            e.target.insertBefore(el, e.target[0]);
-        }
-        document.querySelector('input').value = '';
-    })
+                        }
+                        if (newItens.length > 0) {
+                            let newMessages = controller.mapMessage1(newItens);
+                            document.querySelector('main').appendChild(newMessages);
+                            document.querySelector('main > div').classList.add('set-opacity');
+                        }
+                        indexToReplace = chatItensDOM - 1;
+                        newItens = [];
+                        indexToReplace = 0;
+                        controller.scrollToLastElement();
+                        document.querySelector('input[type=text]').focus();
+                    })
+            }, 3000);
+        })
+        .catch(err => {
+            document.querySelector('#spinner-container').classList.toggle('hide');
+            e.target.classList.toggle("hide");
+            if (e.target.children.length < 3) {
+                let el = document.createElement('p');
+                el.innerHTML = 'Someone already took this name or is invalid, please choose another!';
+                e.target.insertBefore(el, e.target[0]);
+            }
+            document.querySelector('input').value = '';
+        })
 }
-
 function sendFormMessage(e) {
     e.preventDefault();
     let chatItensDOM = document.querySelectorAll('.chat-item');
@@ -458,7 +462,6 @@ function checkMessageType(e) {
     e.currentTarget.querySelector('ion-icon:last-child').classList.add('checkedMessageType');
     controller.setCheckedMessageTypeItem(e.currentTarget.querySelector('p').innerText);
 }
-
 
 function togglePrivateMessage(e) {
     let checkedMessageTypeItem = document.querySelector('.checkedMessageType')?.previousElementSibling?.innerText || "Público";

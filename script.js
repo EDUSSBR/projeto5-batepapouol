@@ -458,3 +458,25 @@ function checkMessageType(e) {
     e.currentTarget.querySelector('ion-icon:last-child').classList.add('checkedMessageType');
     controller.setCheckedMessageTypeItem(e.currentTarget.querySelector('p').innerText);
 }
+
+
+function togglePrivateMessage(e) {
+    let checkedMessageTypeItem = document.querySelector('.checkedMessageType')?.previousElementSibling?.innerText || "Público";
+    let checkedMessagePerson = document.querySelector('.checkedPerson')?.previousElementSibling?.innerText || "Todos";
+    let reservadamenteElement = document.querySelector('form p');
+    if (reservadamenteElement === null && checkedMessageTypeItem === "Reservadamente") {
+        let form = document.querySelector('form')
+        let pEl = document.createElement('p')
+        console.log(checkedMessagePerson)
+        if (checkedMessagePerson.length > 25) {
+            checkedMessagePerson = checkedMessagePerson.slice(0, 25)
+            pEl.textContent = `Enviando para ${checkedMessagePerson}... (Reservadamente)`
+        } else {
+            pEl.textContent = `Enviando para ${checkedMessagePerson} (Reservadamente)`
+        }
+        form.appendChild(pEl)
+
+    } else if (checkedMessageTypeItem === 'Público') {
+        reservadamenteElement?.remove()
+    }
+}

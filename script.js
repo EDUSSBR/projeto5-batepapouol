@@ -325,7 +325,31 @@ function joinChat(e) {
     })
     .then(() => {
         setInterval(() => services.updateStatus(controller.info.username), 5000);
-   
+        setInterval(() => {
+            let el = document.querySelector('aside');
+            let checkedPersonItem = document.querySelector('.checkedPerson')?.previousElementSibling?.innerText || "Todos";
+            let checkedMessageTypeItem = document.querySelector('.checkedMessageType')?.previousElementSibling?.innerText || "Público";
+            controller.setCheckedPersonItem(checkedPersonItem);
+            controller.setCheckedMessageTypeItem(checkedMessageTypeItem);
+            services.getParticipants()
+                .then(response => response.json())
+                .then(participants => {
+                    el.innerHTML = '';
+                    el.appendChild(controller.createParticipantsTemplate(participants));
+                    if (checkedPersonItem === 'Todos') {
+                        document.querySelector('aside > div > ion-icon:last-child').classList.add('checkedPerson');
+                    } else {
+                        controller.setCheckedPersonItem(checkedPersonItem.slice(0, 25));
+                    }
+                    let publicElement = el.querySelectorAll('div');
+                    if (checkedMessageTypeItem === 'Reservadamente') {
+                        publicElement[publicElement.length - 1].lastChild.classList.add('checkedMessageType');
+                    } else {
+                        controller.setCheckedMessageTypeItem("Reservadamente")
+                        publicElement[publicElement.length - 2].lastChild.classList.add('checkedMessageType');
+                    }
+                })
+        }, 10000);
         setInterval(async () => {
             let chatItensDOM = document.querySelectorAll('.chat-item');
             await services.getMessages()

@@ -325,6 +325,42 @@ function joinChat(e) {
     })
     .then(() => {
         setInterval(() => services.updateStatus(controller.info.username), 5000);
+   
+        setInterval(async () => {
+            let chatItensDOM = document.querySelectorAll('.chat-item');
+            await services.getMessages()
+                .then((messages) => messages.json())
+                .then(messages => {
+                    return { chatItensDOM, actualMessages: messages }
+                })
+                .then(({ chatItensDOM, actualMessages }) => {
+                    let DomItensArray = [...chatItensDOM];
+                    let lastItem = DomItensArray[chatItensDOM.length - 1];
+                    let lastMSG = lastItem.lastChild.textContent.trim();
+                    let indexToReplace = chatItensDOM.length - 1;
+                    for (let i = (chatItensDOM.length - 1); i > -1; i--) {
+                        if (actualMessages[i]?.text === lastMSG) {
+                            indexToReplace = i;
+                            break;
+                        }
+                    }
+                    let newItens = [];
+                    if (indexToReplace !== chatItensDOM.length - 1) {
+                        newItens = actualMessages.slice(indexToReplace + 1);
+
+                    }
+                    if (newItens.length > 0) {
+                        let newMessages = controller.mapMessage1(newItens);
+                        document.querySelector('main').appendChild(newMessages);
+                        document.querySelector('main > div').classList.add('set-opacity');
+                    }
+                    indexToReplace = chatItensDOM - 1;
+                    newItens = [];
+                    indexToReplace = 0;
+                    controller.scrollToLastElement();
+                    document.querySelector('input[type=text]').focus();
+                })
+        }, 3000);
     })
     .catch(err => {
         document.querySelector('#spinner-container').classList.toggle('hide');

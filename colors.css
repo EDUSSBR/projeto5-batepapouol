@@ -1,0 +1,85 @@
+:root {
+    --gray-join-button-background: #E7E7E7;
+    --gray-join-button-text: #696969;
+    --gray-join-button-input-text: #AEAEAE;
+    --gray-join-button-input-border: #D7D7D7;
+    --black: black;
+    --white: white;
+    --gray-main: #E5E5E5;
+    --green: #28BB25;
+    --gray-status-message: #DCDCDC;
+    --gray-message-time: #AAAAAA;
+    --black-message: black;
+    --pink-private-message: #FFDEDE;
+    --sending-message-gray: #505050;
+}
+
+/* PAGINA INICIAL */
+/* * {
+    background-color: white;
+} */
+
+#join-chat-page-container button {
+    background-color: var(--gray-join-button-background);
+    color: var(--gray-join-button-text);
+}
+
+#join-chat-page-container button:hover {
+    color: rgb(133, 7, 7);
+    background-color: orange;
+}
+
+#join-chat-page-container input[type=text]:focus {
+    outline: 1px solid orange;
+    transition: all 0.1s linear;
+}
+
+#join-chat-page-container input[type=text]:hover {
+    outline: 1px solid orange;
+    transition: all 0.2s linear;
+}
+#join-chat-page-container p {
+    color: rgb(133, 7, 7);
+}
+#join-chat-page-container input[type=text] {
+    color: var(--gray-join-button-text);
+}
+
+#chat-page-container .chat-item, #chat-page-container header {
+    background-color: white;
+}
+
+#chat-page-container main {
+    background-color: var(--gray-main);
+}
+
+/* #chat-page-container main{ */
+    /* background-color: white; */
+/* } */
+#chat-page-container .chat-item span:first-child {
+    color: var(--gray-message-time);
+}
+
+#chat-page-container footer form {
+    background-color: white;
+    
+}
+
+#chat-page-container aside {
+    background-color: white;
+}
+
+#chat-page-container footer input[type=text]::placeholder {
+    color: black;
+}
+
+#chat-page-container footer button{
+    background-color: white;
+}
+#chat-page-container aside div:hover, #chat-page-container aside div:hover > *{
+    background-color: orange;
+}
+
+#chat-page-container {
+    background-color: #E5E5E5;
+}

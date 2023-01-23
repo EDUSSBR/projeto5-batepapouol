@@ -1,0 +1,63 @@
+* {
+    font-family: 'Roboto';
+    font-weight: 400;
+    font-size: 14px;
+}
+#join-chat-page-container input {
+    font-size: 18px;
+    line-height: 25px;
+}
+#join-chat-page-container p {
+    font-size: 18px;
+}
+#chat-page-container .chat-item{
+    line-height: 20px;
+}
+#chat-page-container .chat-item span{
+    font-weight: 700;
+}
+#chat-page-container .chat-item span:first-child{
+    font-weight: 400;
+}
+#chat-page-container footer input, #chat-page-container footer input[type=text]::placeholder {
+font-style: italic;
+font-size: 18px;
+line-height: 21px;
+}
+
+#chat-page-container aside{
+    font-family: 'Roboto';
+font-weight: 700;
+font-size: 16px;
+line-height: 19px;
+}
+#chat-page-container aside p{
+font-weight: 400;
+}
+
+#chat-page-container footer p{
+    font-family: 'Roboto';
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 25px;  
+}
+/* remover conteúdo placeholder */
+input:focus::-webkit-input-placeholder {
+    color: transparent !important; 
+}
+
+input:focus:-moz-placeholder {
+    color: transparent !important;
+}
+
+input:focus::-moz-placeholder {
+    color: transparent !important;
+}
+
+input:focus:-ms-input-placeholder {
+    color: transparent !important;
+}
+
+
+
+

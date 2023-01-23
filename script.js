@@ -9,10 +9,10 @@ const services = {
         }
     },
     joinParticipant: async function joinParticipant(name) {
-        return await this.post(this.endpoints.participants, { name })
+        return await this.post(this.endpoints.participants, { name });
     },
     updateStatus: async function updateStatus(name) {
-        return await this.post(this.endpoints.status, { name })
+        return await this.post(this.endpoints.status, { name });
     },
     getMessages: function getMessages() {
         if (this.oldAbortController === undefined) {
@@ -127,6 +127,7 @@ const controller = {
         let newFrag = messages.reduce((acc, message) => {
 
             let divNode = document.createElement('div');
+            divNode.setAttribute("data-test","message")
             let pNode = document.createElement('p');
             pNode.classList.add('chat-item');
             let timeEL = document.createElement('span');
@@ -337,7 +338,7 @@ function joinChat(e) {
             controller.scrollToLastElement();
         })
         .then(() => {
-            setInterval(() => services.updateStatus(controller.info.username), 5000);
+            setInterval(() => services.updateStatus(controller.info.username).catch(()=>window.location.reload()), 5000);
             setInterval(() => {
                 let el = document.querySelector('aside');
                 let checkedPersonItem = document.querySelector('.checkedPerson')?.previousElementSibling?.innerText || "Todos";
@@ -455,7 +456,7 @@ function sendFormMessage(e) {
             // document.querySelector('input[type=text]').focus()  //tirei pq do celular
         }).catch(e => {
             console.error(e);
-            // window.locatioasdn.reload()
+            // window.location.reload()
         })
     target.value = "";
 }

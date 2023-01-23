@@ -204,7 +204,16 @@ body {
 
 
 /* CENTRALIZAR PUBLICO COM ICONES */
+#chat-page-container span{
+
+    z-index: 10;
+}
+#chat-page-container aside {
+    overflow-y: scroll;
+    z-index: 10;
+}
 #chat-page-container aside>div {
+
     display: flex;
     width: 100%;
     align-items: center;

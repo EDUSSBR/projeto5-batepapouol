@@ -447,3 +447,14 @@ function sendFormMessage(e) {
         })
     target.value = "";
 }
+
+function checkPerson(e) {
+    document.querySelector('.checkedPerson')?.classList?.remove('checkedPerson');
+    e.currentTarget.querySelector('ion-icon:last-child').classList.add('checkedPerson');
+    controller.setCheckedPersonItem(e.currentTarget.querySelector('p').innerText);
+}
+function checkMessageType(e) {
+    document.querySelector('.checkedMessageType')?.classList?.remove('checkedMessageType');
+    e.currentTarget.querySelector('ion-icon:last-child').classList.add('checkedMessageType');
+    controller.setCheckedMessageTypeItem(e.currentTarget.querySelector('p').innerText);
+}

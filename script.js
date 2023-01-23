@@ -262,3 +262,49 @@ const controller = {
     }
 
 }
+
+function joinChat(e) {
+    e.preventDefault();
+    userName = e.target.querySelector('input').value;
+    document.querySelector('#spinner-container').classList.toggle('hide');
+    e.target.classList.toggle("hide");
+    services.joinParticipant(userName)
+        .then((response) => {
+            if (response.ok) {
+                controller.setUserName(userName);
+                return services.getMessages();
+            }
+        })
+        .then(messages => messages.json())
+        .then(actualMessages => {
+            document.querySelector('#join-chat-page-container').remove();
+            controller.mountChatPage();
+            controller.setupController();
+            let newMessages = controller.mapMessage1(actualMessages);
+            document.querySelector('main').appendChild(newMessages);
+            document.querySelector('main > div').classList.add('set-opacity');
+            let el = document.querySelector('aside');
+            services.getParticipants()
+                .then(response => response.json())
+                .then(participants => {
+                    el.appendChild(controller.createParticipantsTemplate(participants));
+                    document.querySelector('aside > div > ion-icon:last-child').classList.add('checkedPerson');
+                    let publicElement = el.querySelectorAll('div');
+                    publicElement[publicElement.length - 2].lastChild.classList.add('checkedMessageType');
+                })
+            document.querySelector('input[type=text]').focus();
+            controller.scrollToLastElement();
+        })
+        
+        
+        .catch(err => {
+            document.querySelector('#spinner-container').classList.toggle('hide');
+            e.target.classList.toggle("hide");
+            if (e.target.children.length < 3) {
+                let el = document.createElement('p');
+                el.innerHTML = 'Someone already took this name or is invalid, please choose another!';
+                e.target.insertBefore(el, e.target[0]);
+            }
+            document.querySelector('input').value = '';
+        })
+}

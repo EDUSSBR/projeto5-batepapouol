@@ -1,3 +1,4 @@
+let userName = ''
 const services = {
     endpoints: { status: "status", messages: "messages", participants: "participants" },
     createMessageBody: function createMessageBody(userName, message, userToSend, messageType) {
@@ -50,4 +51,34 @@ const services = {
         const response = await fetch(request);
         return response;
     },
+}
+
+
+const controller = {
+    mountChatPage: function mountChatPage() {
+        document.body.innerHTML = `
+        <div id="chat-page-container">
+
+        <header>
+            <img src="./imgs/logo.svg" alt="logo">
+            <ion-icon name="people" onclick='openModal();'></ion-icon>
+        </header>
+        <main>
+        </main>
+        <footer>
+            <form onsubmit="sendFormMessage(event)" action="post">
+                <input onfocus="togglePrivateMessage(event)" autocomplete="off" type="text" min='3' placeholder="Escreva aqui..." name="message">
+                <button type="submit"><ion-icon  name="paper-plane-outline"></ion-icon></button>
+            </form>
+        </footer>
+
+
+        <div id="modal-container" class='modal-container hide-modal'>
+            <span onclick='closeModal();' class="modal-left-side"></span>
+            <aside>
+            </aside>
+        </div>
+    </div>`
+    },
+
 }

@@ -397,3 +397,53 @@ function joinChat(e) {
         document.querySelector('input').value = '';
     })
 }
+
+function sendFormMessage(e) {
+    e.preventDefault();
+    let chatItensDOM = document.querySelectorAll('.chat-item');
+    let target = e.target.querySelector('input[type=text]');
+    let checkedPersonItem = document.querySelector('.checkedPerson')?.previousElementSibling?.innerText || "Todos";
+    let checkedMessageTypeItem = document.querySelector('.checkedMessageType')?.previousElementSibling?.innerText || "Público";
+    let messageTo = checkedPersonItem || "Todos";
+    let messageType = checkedMessageTypeItem === "Público" ? "message" : "private_message";
+
+    services.sendMessage(controller.info.username, target.value, messageTo, messageType)
+        .then(() => {
+            // services.messageAbortController.abort()
+            return services.getMessages()
+        }, (e) => console.error(e))
+        .then((messages) => messages.json())
+        .then(messages => {
+            return { chatItensDOM, actualMessages: messages }
+        })
+        .then(({ chatItensDOM, actualMessages }) => {
+            let DomItensArray = [...chatItensDOM];
+            let lastItem = DomItensArray[chatItensDOM.length - 1];
+            let lastMSG = lastItem.lastChild.textContent.trim();
+            let indexToReplace = chatItensDOM.length - 1;
+            for (let i = (chatItensDOM.length - 1); i > -1; i--) {
+                if (actualMessages[i]?.text === lastMSG) {
+                    indexToReplace = i;
+                    break;
+                }
+            }
+            let newItens = [];
+            if (indexToReplace !== chatItensDOM.length - 1) {
+                newItens = actualMessages.slice(indexToReplace + 1);
+
+            }
+            if (newItens.length > 0) {
+                let newMessages = controller.mapMessage1(newItens);
+                document.querySelector('main').appendChild(newMessages);
+            }
+            indexToReplace = chatItensDOM - 1;
+            newItens = [];
+            indexToReplace = 0;
+            controller.scrollToLastElement();
+            // document.querySelector('input[type=text]').focus()  //tirei pq do celular
+        }).catch(e => {
+            console.error(e);
+            // window.locatioasdn.reload()
+        })
+    target.value = "";
+}

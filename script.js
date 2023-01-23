@@ -65,20 +65,20 @@ const controller = {
 
         <header>
             <img src="./imgs/logo.svg" alt="logo">
-            <ion-icon name="people" onclick='openModal();'></ion-icon>
+            <ion-icon data-test="open-participants" name="people" onclick='openModal();'></ion-icon>
         </header>
         <main>
         </main>
         <footer>
             <form onsubmit="sendFormMessage(event)" action="post">
-                <input onfocus="togglePrivateMessage(event)" autocomplete="off" type="text" min='3' placeholder="Escreva aqui..." name="message">
-                <button type="submit"><ion-icon  name="paper-plane-outline"></ion-icon></button>
+                <input data-test="input-message" onfocus="togglePrivateMessage(event)" autocomplete="off" type="text" min='3' placeholder="Escreva aqui..." name="message">
+                <button data-test="send-message" type="submit"><ion-icon  name="paper-plane-outline"></ion-icon></button>
             </form>
         </footer>
 
 
         <div id="modal-container" class='modal-container hide-modal'>
-            <span onclick='closeModal();' class="modal-left-side"></span>
+            <span data-test="overlay" onclick='closeModal();' class="modal-left-side"></span>
             <aside>
             </aside>
         </div>
@@ -90,7 +90,7 @@ const controller = {
     mapMessage: function mapMessage(messages) {
         this.messages = messages.map(message => {
             if (message.type === 'status') {
-                return `<div class="status set-opacity">
+                return `<div data-test="message" class="status set-opacity">
                             <p class="chat-item status">
                             <span>(${message.time})</span>
                             <span>${message.from}</span>
@@ -100,7 +100,7 @@ const controller = {
                             </p>
                         </div>`;
             } else if (message.type === 'private_message') {
-                return `<div class="private-message set-opacity">
+                return `<div data-test="message" class="private-message set-opacity">
                             <p class="chat-item">
                             <span>(${message.time})</span>
                             <span>${message.from}</span>
@@ -110,7 +110,7 @@ const controller = {
                             </p>
                         </div>`;
             } else {
-                return `<div class="set-opacity">
+                return `<div data-test="message" class="set-opacity">
                     <p class="chat-item">
                     <span>(${message.time})</span>
                     <span>${message.from}</span>
@@ -241,6 +241,7 @@ const controller = {
         newFrag.append(div1);
         div1.append(ionIcon1);
         div1.append(p1);
+        div1.setAttribute('data-test',"all")
         div1.append(ionIcon2);
         let participantFrags = createParticipantsFragments(participants);
         newFrag.append(participantFrags);
@@ -249,7 +250,12 @@ const controller = {
         newFrag.append(div2);
         div2.append(ionIcon3);
         div2.append(p2);
+        div2.setAttribute('data-test',"public")
+        div3.setAttribute('data-test',"private")
+
         div2.append(ionIcon4);
+        ionIcon4.setAttribute('data-test',"check")
+        ionIcon6.setAttribute('data-test',"check")
         newFrag.append(div3);
         div3.append(ionIcon5);
         div3.append(p3);
@@ -272,6 +278,7 @@ function createParticipantsFragments(text) {
     let frag = new DocumentFragment();
     for (let item of text) {
         let divEl = document.createElement('div');
+        divEl.setAttribute("data-test","participant")
         divEl.classList.add('participants-item');
         divEl.onclick = (event) => { checkPerson(event) };
         let firstIconEL = document.createElement('ion-icon');
@@ -280,6 +287,7 @@ function createParticipantsFragments(text) {
         pEL.append(item.name.slice(0, 25));
         let secondIconEL = document.createElement('ion-icon');
         secondIconEL.setAttribute('name', "checkmark-sharp");
+        secondIconEL.setAttribute('data-test',"check");
         if (item.name === controller.info.checkedPersonItem) {
             secondIconEL.classList.add("checkedPerson");
         }
@@ -470,6 +478,7 @@ function togglePrivateMessage(e) {
     if (reservadamenteElement === null && checkedMessageTypeItem === "Reservadamente") {
         let form = document.querySelector('form')
         let pEl = document.createElement('p')
+        pEl.setAttribute('data-test',"recipient")
         console.log(checkedMessagePerson)
         if (checkedMessagePerson.length > 25) {
             checkedMessagePerson = checkedMessagePerson.slice(0, 25)

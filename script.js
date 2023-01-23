@@ -263,6 +263,28 @@ const controller = {
 
 }
 
+function createParticipantsFragments(text) {
+    let frag = new DocumentFragment();
+    for (let item of text) {
+        let divEl = document.createElement('div');
+        divEl.classList.add('participants-item');
+        divEl.onclick = (event) => { checkPerson(event) };
+        let firstIconEL = document.createElement('ion-icon');
+        firstIconEL.setAttribute('name', "person-circle");
+        let pEL = document.createElement('p');
+        pEL.append(item.name.slice(0, 25));
+        let secondIconEL = document.createElement('ion-icon');
+        secondIconEL.setAttribute('name', "checkmark-sharp");
+        if (item.name === controller.info.checkedPersonItem) {
+            secondIconEL.classList.add("checkedPerson");
+        }
+        divEl.append(firstIconEL);
+        divEl.append(pEL);
+        divEl.append(secondIconEL);
+        frag.append(divEl);
+    };
+    return frag;
+}
 function joinChat(e) {
     e.preventDefault();
     userName = e.target.querySelector('input').value;
@@ -308,3 +330,4 @@ function joinChat(e) {
             document.querySelector('input').value = '';
         })
 }
+
